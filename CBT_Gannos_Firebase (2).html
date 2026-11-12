@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CBT Gannos Digital Indonesia</title>
+<style>
+:root{--bg:#e6eef8;--card:#fff;--tx:#1f2a3c;--mu:#5b6b82;--pr:#1565c0;--ok:#1b8a45;--no:#d32f2f;--bd:#cfd9e8;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:1rem/1.5 system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+main{max-width:1000px;width:100%;margin:0 auto;padding:14px;flex:1}.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:10px 0}
+h1{font-size:20px;margin:6px 0}h2{font-size:17px;margin:4px 0 8px}small,.mu{color:var(--mu)}
+input,select,textarea,button{font:inherit;color:inherit;background:#fff;border:1px solid var(--bd);border-radius:8px;padding:9px;width:100%;margin:4px 0}
+button{background:var(--pr);color:#fff;border:0;cursor:pointer;font-weight:600}button.g{background:#fff;color:var(--tx);border:1px solid var(--bd)}button:disabled{opacity:.45}
+.row{display:flex;gap:8px}.row>*{flex:1}.opt{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:8px;margin:6px 0;cursor:pointer}
+.opt.s{border-color:var(--pr);background:#e3f0ff}.opt.ok{border-color:var(--ok);background:#e8f6ee}.opt.no{border-color:var(--no);background:#fdeaea}.opt input{width:auto;margin:0}
+.grid{display:flex;flex-wrap:wrap;gap:6px}.grid b{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--bd);border-radius:8px;cursor:pointer;background:#fff}
+.grid b.d{background:#2e9e4f;color:#fff}.grid b.f{background:#f5a623;color:#111}.grid b.cur{outline:3px solid var(--pr)}
+.bar{position:sticky;top:0;background:#1565c0;color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;z-index:5}.tm{background:#fff;color:#1565c0;border-radius:6px;padding:3px 10px}
+.ban{background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;border-radius:12px;padding:22px;text-align:center}.ban h1{font-size:24px;margin:0 0 4px}
+.ex{display:grid;gap:10px}@media(min-width:800px){.ex{grid-template-columns:1fr 290px}}.qh{background:#e3f0ff;margin:-14px -14px 12px;padding:10px 14px;border-radius:12px 12px 0 0;font-weight:700}
+.fin{background:#e07b00}.rg.on{background:#f5a623;color:#111}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--bd);padding:6px;text-align:left}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--bd)}.hide{display:none}.ok{color:var(--ok)}.no{color:var(--no)}details{border:1px solid var(--bd);border-radius:8px;padding:8px;margin:6px 0}
+#ft{background:#fff;border-top:3px solid #1565c0;text-align:center;font-size:13px;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}#ft b{color:#1565c0}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kt{border:2px solid #1565c0;border-radius:10px;padding:10px;background:#fff;break-inside:avoid;font-size:13px}
+.kt h3{margin:0 0 6px;font-size:14px;color:#1565c0;border-bottom:1px solid #cfd9e8;padding-bottom:4px}.kt td{border:0;padding:1px 4px}.kt .pin{font:700 18px monospace;letter-spacing:2px}.kt small{display:block;margin-top:4px}
+@media print{body{background:#fff}.np,.bar,#ft{display:none!important}main{padding:0;max-width:none}.kg{gap:6px}}
+</style></head><body>
+<div id="bar" class="bar hide"><b>CBT Gannos Digital Indonesia <small id="tt" style="color:#cfe0ff"></small></b><span><small id="pn" style="color:#cfe0ff"></small> <span class="tm">Sisa <b id="tm"></b></span></span></div>
+<main id="app"></main>
+<footer id="ft">© 2026 <b>Gannos Digital Indonesia</b> · Computer Based Test</footer>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+// ===== Konfigurasi Firebase: proyek cbt-ujian-1423e =====
+const FB={apiKey:"AIzaSyCa20bArNDRFl_LHRQIhLUxLc_M6qWtGs8",authDomain:"cbt-ujian-1423e.firebaseapp.com",projectId:"cbt-ujian-1423e",storageBucket:"cbt-ujian-1423e.firebasestorage.app",messagingSenderId:"535659502943",appId:"1:535659502943:web:21392193d7e5ce0fa32aea"};
+const OK=true;let auth,db;if(OK){firebase.initializeApp(FB);auth=firebase.auth();db=firebase.firestore()}
+const $=id=>document.getElementById(id),A=$('app'),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const L=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},S=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cl=s=>String(s??'').trim().replace(/[^A-Za-z0-9]/g,''),tok=()=>Math.random().toString(36).slice(2,8).toUpperCase().padEnd(6,'X');
+const toCsv=r=>r.map(x=>x.map(c=>'"'+String(c??'').replace(/"/g,'""')+'"').join(',')).join('\n');
+function simpan(n,t){const u=URL.createObjectURL(new Blob(['\ufeff'+t],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+async function baca(f){const w=/\.csv$/i.test(f.name)?XLSX.read(await f.text(),{type:'string'}):XLSX.read(await f.arrayBuffer(),{type:'array'});return XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,raw:false,defval:''})}
+let ME,Q,TK,st,timer;
+function home(){clearInterval(timer);$('bar').classList.add('hide');
+if(!OK){A.innerHTML='<div class="c"><h2>Firebase belum diisi</h2>Buka file ini, isi <b>FB</b> di bagian script dengan konfigurasi proyek Firebase Anda.</div>';return}
+A.innerHTML=`<div class="ban"><h1>Computer Based Test</h1>Gannos Digital Indonesia</div>
+<div class="c"><h2>Login Peserta</h2><input id="ni" placeholder="Nomor Peserta" inputmode="numeric"><input id="pn2" type="password" placeholder="PIN"><button onclick="masuk()">Login</button></div>
+<div class="c"><h2>Admin / Guru</h2><input id="em" type="email" placeholder="Email guru"><input id="pw" type="password" placeholder="Password"><button class="g" onclick="alogin()">Masuk Panel</button></div>`}
+async function masuk(){try{const ni=cl($('ni').value),pin=cl($('pn2').value);if(!ni||!pin)return alert('Isi nomor peserta dan PIN');
+await auth.signInAnonymously();const d=await db.doc('peserta/'+ni+'_'+pin).get();if(!d.exists)return alert('Nomor peserta atau PIN salah');
+ME={...d.data(),id:ni+'_'+pin};konf()}catch(e){alert('Gagal masuk: '+(e.code||e.message))}}
+function konf(){A.innerHTML=`<h1>Konfirmasi Data Peserta</h1><div class="c"><table><tr><td>Nomor</td><td>${esc(ME.ni)}</td></tr><tr><td>Nama</td><td>${esc(ME.nm)}</td></tr><tr><td>Paket</td><td>${esc(ME.pk)}</td></tr></table>
+<input id="tk" placeholder="Token dari proktor" style="text-transform:uppercase"><label class="opt"><input type="checkbox" id="cf"> Data saya benar dan saya siap mengerjakan</label><button onclick="mulai()">Mulai Ujian</button></div><button class="g" onclick="home()">Keluar</button>`}
+async function mulai(){if(!$('cf').checked)return alert('Centang konfirmasi terlebih dahulu');const tk=cl($('tk').value).toUpperCase();
+try{const d=await db.doc('soal/'+tk).get();if(!d.exists)return alert('Token salah');Q=d.data();TK=tk;const key='sesi_'+ME.id+'_'+tk;
+if(L('kirim_'+ME.id+'_'+tk,0))return alert('Anda sudah mengirim jawaban untuk sesi ini.');
+st=L(key,null)||{a:{},f:{},i:0,end:Date.now()+Q.menit*60000};st.key=key;S(key,st);ujian()}catch(e){alert('Gagal memuat soal: '+(e.code||e.message))}}
+function ujian(){$('bar').classList.remove('hide');$('tt').textContent=Q.mp;$('pn').textContent=ME.nm;clearInterval(timer);timer=setInterval(tick,1000);tick();render()}
+function tick(){const s=Math.max(0,Math.round((st.end-Date.now())/1000));$('tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');if(!s){clearInterval(timer);kirim(true)}}
+function render(){const q=Q.q,x=q[st.i],a=st.a[st.i],em=i=>st.a[i]===undefined||String(st.a[i]).trim()==='';
+A.innerHTML=`<div class="ex"><div class="c"><div class="qh">Soal Nomor ${st.i+1} dari ${q.length}</div><p>${esc(x.s)}</p>
+${x.t=='pg'?x.o.map((o,j)=>`<label class="opt ${a===j?'s':''}"><input type="radio" name="o" ${a===j?'checked':''} onchange="jwb(${j})"><b>${'ABCD'[j]}.</b> ${esc(o)}</label>`).join(''):`<textarea rows="6" placeholder="Tulis jawaban..." oninput="jwb(this.value)">${esc(a||'')}</textarea>`}
+<div class="row"><button class="g" onclick="go(${st.i-1})" ${st.i?'':'disabled'}>‹ Sebelumnya</button><button class="g rg ${st.f[st.i]?'on':''}" onclick="flag()">Ragu-ragu</button><button class="g" onclick="go(${st.i+1})" ${st.i<q.length-1?'':'disabled'}>Berikutnya ›</button></div></div>
+<aside><div class="c"><b>Daftar Soal</b><div class="grid" style="margin-top:8px">${q.map((_,n)=>`<b class="${em(n)?'':'d'} ${st.f[n]?'f':''} ${n==st.i?'cur':''}" onclick="go(${n})">${n+1}</b>`).join('')}</div></div>
+<small>Terjawab ${q.filter((_,i)=>!em(i)).length} dari ${q.length}. Jawaban tersimpan otomatis di perangkat.</small><button class="fin" onclick="kirim(false)">Selesai &amp; Kirim Jawaban</button></aside></div>`}
+function jwb(v){st.a[st.i]=v;S(st.key,st);if(Q.q[st.i].t=='pg')render()}function flag(){st.f[st.i]=!st.f[st.i];S(st.key,st);render()}function go(n){st.i=n;S(st.key,st);render()}
+async function kirim(auto){if(!auto){const k=Q.q.filter((_,i)=>st.a[i]===undefined||String(st.a[i]).trim()==='').length;if(k&&!confirm('Masih ada '+k+' soal belum dijawab. Tetap kirim?'))return;if(!confirm('Kirim jawaban sekarang? Tidak dapat diubah setelah dikirim.'))return}
+clearInterval(timer);$('bar').classList.add('hide');A.innerHTML='<div class="c"><h2>Mengirim jawaban...</h2><small>Jangan tutup halaman ini.</small></div>';
+const doc={ni:ME.ni,nm:ME.nm,pk:ME.pk,mp:Q.mp,tk:TK,a:JSON.stringify(st.a),t:firebase.firestore.FieldValue.serverTimestamp()};
+for(let n=0;n<8;n++){try{await Promise.race([db.doc('jawaban/'+ME.id+'_'+TK).set(doc),sleep(15000).then(()=>{throw{code:'timeout'}})]);S('kirim_'+ME.id+'_'+TK,1);localStorage.removeItem(st.key);
+A.innerHTML=`<h1>Jawaban Terkirim</h1><div class="c ok"><b>Terima kasih, ${esc(ME.nm)}.</b><br>Jawaban untuk ${esc(Q.mp)} sudah tersimpan. Nilai diumumkan oleh guru.</div><button onclick="konf()">Kembali</button>`;return}
+catch(e){if(e.code=='permission-denied'){A.innerHTML='<div class="c no">Jawaban ditolak server (mungkin sudah pernah terkirim). Hubungi proktor.</div>';return}A.innerHTML=`<div class="c"><h2>Koneksi bermasalah</h2>Mencoba lagi (${n+1}/8)... jawaban aman di perangkat.</div>`;await sleep(2000*(n+1))}}
+A.innerHTML='<div class="c"><h2>Belum terkirim</h2>Jawaban aman di perangkat. Periksa sinyal lalu tekan tombol di bawah.</div><button onclick="kirim(true)">Kirim ulang</button>'}
+// ===== ADMIN / GURU =====
+async function alogin(){try{await auth.signInWithEmailAndPassword($('em').value.trim(),$('pw').value);adm()}catch(e){alert('Login gagal: '+(e.code||e.message))}}
+async function adm(){try{const ss=(await db.collection('sesi').orderBy('c','desc').get()).docs.map(d=>({id:d.id,...d.data()}));
+A.innerHTML=`<h1>Panel Admin / Guru</h1><small>${esc(auth.currentUser.email)}</small>
+<div class="c"><h2>1. Data Peserta</h2><small>Unduh template Excel, isi, lalu unggah. Kolom PIN boleh dikosongkan: PIN 5 angka dibuat otomatis.</small><button class="g" onclick="tplPes()">Unduh template Excel peserta</button><input type="file" id="fp" accept=".csv,.xlsx,.xls" onchange="impPes(this)"><button onclick="kartu('')">Cetak / Unduh Kartu Peserta</button></div>
+<div class="c"><h2>2. Soal &amp; Sesi</h2><small>CSV/Excel kolom: Tipe (pg/es), Soal, A, B, C, D, Kunci (A-D; kosong untuk esai).</small><button class="g" onclick="simpan('template-soal.csv',toCsv([['Tipe','Soal','A','B','C','D','Kunci'],['pg','2+3=?','4','5','6','7','B'],['es','Jelaskan...','','','','','']]))">Unduh template soal</button>
+<input id="mp" placeholder="Nama mapel"><input id="mn" type="number" placeholder="Durasi (menit)"><input type="file" id="fs" accept=".csv,.xlsx,.xls"><button onclick="terbit()">Terbitkan sesi (buat token)</button></div>
+${ss.map(s=>`<div class="c"><b>${esc(s.mp)}</b> · ${s.menit} mnt · Token <b>${s.id}</b> <span class="tag">${s.dl?'Sudah diunduh':'Belum diunduh'}</span><div class="row"><button onclick="unduh('${s.id}')">Unduh CSV jawaban</button><button class="g" ${s.dl?'':'disabled'} onclick="hapus('${s.id}')">Hapus jawaban di server</button></div></div>`).join('')}
+<div class="c"><h2>3. Koreksi</h2><small>Unggah CSV hasil unduhan. Pilihan ganda dinilai otomatis; esai dinilai manual.</small><input type="file" id="fk" accept=".csv" multiple onchange="impKor(this)"></div><div id="kor"></div><button class="g" onclick="auth.signOut();home()">Keluar</button>`;korView()}catch(e){alert('Gagal memuat: '+(e.code||e.message))}}
+function simpanX(n,d){const u=URL.createObjectURL(new Blob([d],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
+function tplPes(){const H=['Nomor Peserta','Nama Lengkap','Paket','PIN'];
+if(typeof XLSX==='undefined')return simpan('template-peserta.csv',toCsv([H]));
+const w=XLSX.utils.book_new(),a=XLSX.utils.aoa_to_sheet([H]);a['!cols']=[{wch:20},{wch:38},{wch:18},{wch:12}];XLSX.utils.book_append_sheet(w,a,'Peserta');
+const p=XLSX.utils.aoa_to_sheet([['PETUNJUK - Gannos Digital Indonesia'],['Isi data mulai baris 2 pada sheet Peserta. Jangan mengubah judul kolom.'],['A: Nomor Peserta (unik, huruf/angka tanpa spasi). B: Nama Lengkap. C: Paket (contoh: Paket A / Paket B / Paket C IPA).'],['D: PIN siswa (huruf/angka tanpa spasi). Boleh dikosongkan: sistem membuat PIN 5 angka otomatis.'],['Setelah diisi, simpan lalu unggah di Panel Admin > Data Peserta. Kartu peserta dicetak dari menu yang sama.'],[],['Contoh (jangan ditulis di sheet Peserta):'],H,['2026001','Budi Santoso','Paket A','48213']]);p['!cols']=[{wch:110}];XLSX.utils.book_append_sheet(w,p,'Petunjuk');
+simpanX('template-peserta-gannos.xlsx',XLSX.write(w,{bookType:'xlsx',type:'array'}))}
+async function impPes(el){const f=el.files[0];if(!f)return;const seen={},r=[];(await baca(f)).slice(1).forEach(x=>{const ni=cl(x[0]),nm=String(x[1]).trim();if(!ni||!nm||seen[ni])return;seen[ni]=1;r.push({ni,nm,pk:String(x[2]).trim()||'-',pin:cl(x[3])||String(Math.floor(10000+Math.random()*90000))})});
+if(!r.length)return alert('Tidak ada data valid. Pastikan memakai template (kolom A-D, data mulai baris 2).');if(!confirm(r.length+' peserta akan disimpan. Lanjut?'))return;
+try{for(let i=0;i<r.length;i+=400){const b=db.batch();r.slice(i,i+400).forEach(x=>b.set(db.doc('peserta/'+x.ni+'_'+x.pin),{ni:x.ni,nm:x.nm,pk:x.pk}));await b.commit()}}catch(e){return alert('Gagal menyimpan: '+(e.code||e.message))}
+if(confirm('Peserta tersimpan. Buka kartu peserta sekarang?'))kartu('');else alert('Selesai.')}
+let KD=[];
+async function kartu(pk){try{const d=(await db.collection('peserta').get()).docs.map(x=>({...x.data(),pin:x.id.split('_')[1]})).sort((a,b)=>String(a.pk).localeCompare(b.pk)||String(a.nm).localeCompare(b.nm));
+const PK=[...new Set(d.map(x=>x.pk))],f=pk?d.filter(x=>x.pk==pk):d,url=location.origin+location.pathname;KD=f;
+A.innerHTML=`<div class="np"><h1>Kartu Peserta</h1><div class="row"><select onchange="kartu(this.value)"><option value="">Semua paket</option>${PK.map(p=>`<option ${p==pk?'selected':''}>${esc(p)}</option>`).join('')}</select><button onclick="print()">Cetak / Simpan PDF</button></div><div class="row"><button class="g" onclick="simpan('daftar-pin-peserta.csv',toCsv([['Nomor Peserta','Nama','Paket','PIN']].concat(KD.map(x=>[x.ni,x.nm,x.pk,x.pin]))))">Unduh daftar PIN (CSV)</button><button class="g" onclick="adm()">Kembali</button></div><small>${f.length} kartu. Di jendela cetak pilih "Simpan sebagai PDF" untuk menyimpan file.</small></div>
+<div class="kg">${f.map(x=>`<div class="kt"><h3>KARTU PESERTA CBT · Gannos Digital Indonesia</h3><table><tr><td>Nama</td><td><b>${esc(x.nm)}</b></td></tr><tr><td>Nomor Peserta</td><td><b>${esc(x.ni)}</b></td></tr><tr><td>Paket</td><td>${esc(x.pk)}</td></tr><tr><td>PIN</td><td class="pin">${esc(x.pin)}</td></tr></table><small>Alamat ujian: ${esc(url)}</small><small>Rahasiakan PIN Anda. Jangan diberikan kepada siapa pun.</small></div>`).join('')}</div>`}catch(e){alert('Gagal memuat peserta: '+(e.code||e.message))}}
+async function terbit(){const f=$('fs').files[0],mp=$('mp').value.trim(),mn=Number($('mn').value);if(!f||!mp||!mn)return alert('Isi mapel, durasi, dan pilih file soal');
+const q=[],k={};(await baca(f)).slice(1).forEach(x=>{if(!String(x[1]).trim())return;if(/^e/i.test(x[0]))q.push({t:'es',s:String(x[1])});else{const j='ABCD'.indexOf(String(x[6]).trim().toUpperCase());if(j<0)return;k[q.length]=j;q.push({t:'pg',s:String(x[1]),o:[x[2],x[3],x[4],x[5]].map(String)})}});
+if(!q.length)return alert('Soal tidak terbaca');const tk=tok(),b=db.batch();b.set(db.doc('soal/'+tk),{mp,menit:mn,q});b.set(db.doc('kunci/'+tk),{k});b.set(db.doc('sesi/'+tk),{mp,menit:mn,c:Date.now(),dl:false});await b.commit();alert('Sesi dibuat. Token: '+tk);adm()}
+async function unduh(tk){const d=(await db.collection('jawaban').where('tk','==',tk).get()).docs.map(x=>x.data());if(!d.length)return alert('Belum ada jawaban masuk.');
+simpan('jawaban_'+tk+'.csv',toCsv([['Token','Mapel','NIS','Nama','Paket','Waktu','Jawaban']].concat(d.map(x=>[x.tk,x.mp,x.ni,x.nm,x.pk,x.t?x.t.toDate().toLocaleString('id-ID'):'',x.a]))));await db.doc('sesi/'+tk).update({dl:true});alert(d.length+' jawaban diunduh. Periksa jumlahnya sebelum menghapus.');adm()}
+async function hapus(tk){if(prompt('Pastikan CSV tersimpan aman. Ketik HAPUS untuk menghapus semua jawaban sesi ini dari server:')!=='HAPUS')return;
+const s=(await db.collection('jawaban').where('tk','==',tk).get()).docs;for(let i=0;i<s.length;i+=400){const b=db.batch();s.slice(i,i+400).forEach(d=>b.delete(d.ref));await b.commit()}alert(s.length+' data dihapus.');adm()}
+async function impKor(el){const K=L('kor',{}),SQ=L('sq',{});let n=0;try{for(const f of el.files){const R=(await baca(f)).slice(1);for(const x of R){const[tk,mp,ni,nm,pk,w,a]=x;if(!tk||!ni)continue;
+if(!SQ[tk]){const[s,k]=await Promise.all([db.doc('soal/'+tk).get(),db.doc('kunci/'+tk).get()]);if(!s.exists||!k.exists)continue;SQ[tk]={q:s.data().q,k:k.data().k}}
+const id=ni+'|'+tk;K[id]=K[id]||{es:{}};Object.assign(K[id],{ni,nm,pk,mp,tk,a:JSON.parse(a||'{}')});n++}}}catch(e){alert('Gagal: '+(e.code||e.message))}
+S('kor',K);S('sq',SQ);alert(n+' jawaban siswa diimpor.');korView()}
+let OPEN=-1;function hit(e,SQ){const{q,k}=SQ[e.tk],pg=q.map((x,i)=>x.t=='pg'?i:-1).filter(i=>i>=0),es=q.map((x,i)=>x.t=='es'?i:-1).filter(i=>i>=0),bw=L('bw',70);
+const b=pg.filter(i=>e.a[i]===k[i]).length,skor=pg.length?Math.round(b/pg.length*100):0,done=es.length&&es.every(i=>e.es[i]!==undefined&&e.es[i]!==''),ev=done?Math.round(es.reduce((s,i)=>s+Number(e.es[i]),0)/es.length):null;
+return{b,n:pg.length,skor,es:es.length?ev:'',fin:!es.length?skor:done?Math.round(skor*bw/100+ev*(100-bw)/100):''}}
+function korView(){const K=L('kor',{}),SQ=L('sq',{}),ks=Object.keys(K),bw=L('bw',70);if(!$('kor'))return;
+$('kor').innerHTML=!ks.length?'':`<div class="c"><h2>Hasil Koreksi (${ks.length})</h2><div class="row"><div><small>Bobot PG (%)</small><input type="number" value="${bw}" onchange="S('bw',Math.min(100,Math.max(0,Number(this.value))));korView()"></div><button onclick="expK()">Unduh hasil koreksi (CSV)</button></div><button class="g" onclick="if(confirm('Hapus hasil koreksi di browser ini?')){S('kor',{});korView()}">Kosongkan</button></div>`+
+ks.map((id,i)=>{const e=K[id],h=hit(e,SQ),q=SQ[e.tk].q,k=SQ[e.tk].k;return`<details ${OPEN===i?'open':''}><summary><b>${esc(e.nm)}</b> · ${esc(e.mp)} · PG ${h.b}/${h.n} (${h.skor}) · Akhir: <b>${h.fin===''?'esai belum dinilai':h.fin}</b></summary>
+${q.map((x,n)=>{if(x.t=='es')return`<div class="c"><small>No ${n+1} · Esai</small><p>${esc(x.s)}</p><div style="white-space:pre-wrap">${esc(e.a[n]||'(kosong)')}</div><input type="number" min="0" max="100" placeholder="Nilai 0-100" value="${e.es[n]??''}" onchange="nes(${i},${n},this.value)"></div>`;
+const ok=e.a[n]===k[n];return`<div class="opt ${ok?'ok':'no'}"><b>${n+1}.</b> ${ok?'✔ Benar':'✘ Salah'} · jawaban: ${'ABCD'[e.a[n]]||'-'} · kunci: ${'ABCD'[k[n]]}</div>`}).join('')}</details>`}).join('')}
+function nes(i,n,v){const K=L('kor',{}),id=Object.keys(K)[i];K[id].es[n]=v===''?'':Math.min(100,Math.max(0,Number(v)));S('kor',K);OPEN=i;korView()}
+function expK(){const K=L('kor',{}),SQ=L('sq',{});simpan('hasil-koreksi.csv',toCsv([['NIS','Nama','Paket','Mapel','Benar','Total PG','Skor PG','Nilai Esai','Nilai Akhir']].concat(Object.values(K).map(e=>{const h=hit(e,SQ);return[e.ni,e.nm,e.pk,e.mp,h.b,h.n,h.skor,h.es,h.fin]}))))}
+home();
+</script></body></html>
