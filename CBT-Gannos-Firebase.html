@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CBT PKBM Ristek Nusantara Jaya · Gannos Digital Indonesia</title>
+<style>
+:root{--bg:#eef2f8;--card:#fff;--tx:#1b2030;--mu:#667;--pr:#1565c0;--ok:#17803d;--no:#c62828;--bd:#d9dce5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:1rem/1.5 system-ui,sans-serif}
+main{max-width:1000px;margin:auto;padding:14px}.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin:10px 0}
+h1{font-size:20px;margin:6px 0}h2{font-size:17px;margin:4px 0 8px}small,.mu{color:var(--mu)}
+input,select,textarea,button{font:inherit;color:inherit;background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:9px;width:100%;margin:4px 0}
+button{background:var(--pr);color:#fff;border:0;cursor:pointer;font-weight:600}button.g{background:var(--card);color:var(--tx);border:1px solid var(--bd)}
+.row{display:flex;gap:8px}.row>*{flex:1}.opt{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--bd);border-radius:8px;margin:6px 0;cursor:pointer}
+.opt.s{border-color:var(--pr);background:color-mix(in srgb,var(--pr) 14%,transparent)}.opt.ok{border-color:var(--ok)}.opt.no{border-color:var(--no)}
+.opt input{width:auto;margin:0}.grid{display:flex;flex-wrap:wrap;gap:6px}.grid b{width:38px;height:38px;display:grid;place-items:center;border:1px solid var(--bd);border-radius:8px;cursor:pointer;font-weight:600}
+.grid b.d{background:#2e9e4f;color:#fff;border-color:#2e9e4f}.grid b.f{background:#f5a623;color:#111;border-color:#f5a623}.grid b.cur{outline:3px solid var(--pr);outline-offset:1px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);background:#1565c0;color:#fff;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;z-index:5}.bar small{color:#cfe0ff;margin-left:8px}.tm{background:#fff;color:#1565c0;border-radius:6px;padding:3px 10px;margin-right:6px}.fz{width:auto;display:inline-block;margin:0 0 0 4px;padding:4px 9px;background:#fff;color:#1565c0}.hr{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.ban{background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;border-radius:12px;padding:22px;text-align:center;margin:6px 0}.ban h1{margin:0 0 4px;font-size:24px}.ft{text-align:center;padding:16px 10px;color:var(--mu);font-size:13px}
+.ex{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:800px){.ex{grid-template-columns:1fr 290px}}.qh{background:color-mix(in srgb,var(--pr) 16%,var(--card));margin:-14px -14px 12px;padding:10px 14px;border-radius:12px 12px 0 0;font-weight:700;display:flex;justify-content:space-between}.qh span{font-weight:400;font-size:13px}.side .c{margin-top:0}.sw{display:inline-block;width:14px;height:14px;border:1px solid var(--bd);border-radius:3px;vertical-align:-2px;margin:0 4px 0 8px}.sw.d{background:#2e9e4f}.sw.f{background:#f5a623}.fin{background:#e07b00}.rg.on{background:#f5a623;color:#111;border-color:#f5a623}
+img{max-width:100%;border-radius:8px}table{width:100%;border-collapse:collapse;font-size:14px}th,td{border-bottom:1px solid var(--bd);padding:6px;text-align:left;vertical-align:top}
+.wrap{overflow-x:auto}.ok{color:var(--ok)}.no{color:var(--no)}.hide{display:none}.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid var(--bd)}
+</style></head><body>
+<div id="bar" class="bar hide"><div><b>CBT PKBM</b><small id="tt"></small></div><div class="hr"><small id="pn"></small><span class="tm">Sisa Waktu <b id="tm"></b></span><button class="fz" onclick="fz(1)">A+</button><button class="fz" onclick="fz(-1)">A-</button></div></div>
+<main id="app"></main><footer class="ft">© 2026 <b>Gannos Digital Indonesia</b> · Sistem CBT PKBM Ristek Nusantara Jaya</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const svg=s=>'data:image/svg+xml,'+encodeURIComponent(s);
+const IMG1=svg('<svg xmlns="http://www.w3.org/2000/svg" width="260" height="140"><rect x="30" y="30" width="200" height="80" fill="#9cc3ff" stroke="#1d5fd1" stroke-width="3"/><text x="130" y="76" text-anchor="middle" font-size="14" fill="#123">p = 12 cm, l = 5 cm</text></svg>');
+const IMG2=svg('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="160"><circle cx="100" cy="80" r="60" fill="#ffd28a" stroke="#c77700" stroke-width="3"/><line x1="100" y1="80" x2="160" y2="80" stroke="#333" stroke-width="2"/><text x="130" y="72" font-size="14" fill="#123">r = 7</text></svg>');
+const BANK={
+"Matematika":{menit:30,q:[
+{t:"pg",s:"Perhatikan gambar persegi panjang. Berapa luasnya?",img:IMG1,o:["17 cm²","34 cm²","60 cm²","120 cm²"],k:2},
+{t:"pg",s:"Keliling lingkaran pada gambar (π = 22/7) adalah ...",img:IMG2,o:["22 cm","44 cm","154 cm","308 cm"],k:1},
+{t:"pg",s:"Hasil dari 3/4 + 1/8 adalah ...",o:["4/12","7/8","1","5/4"],k:1},
+{t:"pg",s:"Nilai x pada 2x + 6 = 20 adalah ...",o:["5","6","7","8"],k:2},
+{t:"es",s:"Jelaskan langkah menghitung luas lingkaran berjari-jari 14 cm!"}]},
+"Bahasa Indonesia":{menit:30,q:[
+{t:"pg",s:"Kalimat yang menggunakan huruf kapital dengan benar adalah ...",o:["Saya tinggal di jalan merdeka.","Ibu pergi ke Pasar Baru.","adik membaca buku.","kami belajar di Kelas."],k:1},
+{t:"pg",s:"Sinonim kata 'cermat' adalah ...",o:["ceroboh","teliti","cepat","malas"],k:1},
+{t:"pg",s:"Gagasan pokok paragraf terdapat pada ...",o:["kalimat utama","judul","kalimat penjelas","penutup"],k:0},
+{t:"es",s:"Buatlah satu paragraf singkat tentang pentingnya belajar!"}]}};
+const PAKET=['Paket A','Paket B','Paket C IPA','Paket C IPS'];let FP='Paket A';
+const H1='Kamis, 4 Juni 2026',H2='Jumat, 5 Juni 2026',H3='Sabtu, 6 Juni 2026',IPA='Ilmu Pengetahuan Alam',IPS='Ilmu Pengetahuan Sosial',PKN='Pendidikan Kewarganegaraan',AGM='Pendidikan Agama',BIN='Bahasa Indonesia',MTK='Matematika',SB='Seni Budaya',ING='Bahasa Inggris',PJ='PJOK',PRK='Prakarya';
+const CR=[[H1,'09:00-10:00',BIN,BIN],[H1,'10:00-11:00','Kimia','Ekonomi'],[H1,'11:00-12:00','Matematika Peminatan','Sejarah Peminatan'],[H1,'12:00-13:00',SB,SB],[H1,'13:00-14:00',ING,ING],[H2,'09:00-10:15',MTK,MTK],[H2,'10:15-11:30','Biologi','Sosiologi'],[H2,'13:00-14:00','Sejarah Indonesia','Sejarah Indonesia'],[H3,'09:00-10:00','Fisika','Geografi'],[H3,'10:00-11:00',AGM,AGM],[H3,'11:00-12:00',PKN,PKN],[H3,'12:00-13:00',PJ,PJ],[H3,'13:00-14:00',PRK,PRK]];
+const JAD={'Paket A':[[H1,'09:00-10:00',BIN],[H1,'10:00-11:00',IPA],[H1,'11:00-12:00',PKN],[H2,'09:00-10:00',MTK],[H2,'10:00-11:00',IPS],[H2,'11:00-12:00',AGM]],
+'Paket B':[[H1,'09:00-10:00',BIN],[H1,'10:00-11:00',PKN],[H1,'11:00-12:00',AGM],[H1,'12:00-13:00',SB],[H2,'09:00-10:00',MTK],[H2,'10:00-11:00',IPS],[H2,'11:00-12:00',PJ],[H3,'09:00-10:00',ING],[H3,'10:00-11:00',IPA],[H3,'11:00-12:00',PRK]],
+'Paket C IPA':CR.map(r=>[r[0],r[1],r[2]]),'Paket C IPS':CR.map(r=>[r[0],r[1],r[3]])};
+function dummy(m){return{q:[1,2,3].map(n=>({t:'pg',s:'['+m+'] Soal dummy pilihan ganda nomor '+n+'. Pilih jawaban yang benar.',o:['Pilihan A','Pilihan B','Pilihan C','Pilihan D'],k:n})).concat([{t:'es',s:'['+m+'] Soal dummy esai: jelaskan dengan kalimatmu sendiri satu hal yang kamu pelajari pada mapel ini.'}])}}
+Object.values(JAD).flat().forEach(r=>{if(!BANK[r[2]])BANK[r[2]]=dummy(r[2])});
+const $=id=>document.getElementById(id),A=$('app');
+const L=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}};
+const S=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let st={},timer;
+function home(){clearInterval(timer);clearInterval(poll);$('bar').classList.add('hide');
+A.innerHTML=`<div class="ban"><h1>Computer Based Test</h1><div>PKBM Ristek Nusantara Jaya · Asesmen Semester Ganjil</div></div><small>${USEFB?'Terhubung ke server (Firebase)':'Mode uji lokal · data tersimpan di browser ini'}</small>
+<div class="c"><h2>Login Peserta</h2><input id="ni" placeholder="Nomor Peserta / Username (demo: 2026001)"><input id="pw" type="password" placeholder="Password (demo: ristek01)">
+<div>
+</div>
+<button onclick="masuk()">Login</button></div>
+<div class="c"><h2>Admin / Guru</h2><input id="au" placeholder="Username admin"><input id="pin" type="password" placeholder="Password admin"><small>${USEFB?'Login dengan email admin Firebase':'Mode uji lokal: admin / admin123'}</small><button class="g" onclick="admin()">Buka Panel Admin</button></div>`}
+let ME=null,poll;
+function tok(){return Math.random().toString(36).slice(2,7).toUpperCase()}
+function SES(){const x0=L('sesi',null),x=(x0&&x0[0]&&x0[0].pk)?x0:initSes();if(x.some(s=>!s.token)){x.forEach(s=>{if(!s.token)s.token=tok()});S('sesi',x)}return x}
+function PES(){return L('peserta',null)||initPes()}
+function initPes(){const p=[['2026001','Budi Santoso','Paket A'],['2026002','Siti Aminah','Paket B'],['2026003','Andi Wijaya','Paket C IPA'],['2026004','Dewi Lestari','Paket C IPS'],['2026005','Rahmat Hidayat','Paket C IPA']].map(([ni,nm,pk])=>({ni,nm,pk,kl:({'Paket A':'IV','Paket B':'VIII'})[pk]||'XI',pw:'ristek01',rg:'Lt.2 R.Kelas'}));S('peserta',p);return p}
+function initSesOld(){const n=Date.now(),s=[{id:1,nama:'Sesi 1 (Jam 1)',mp:'Matematika',mulai:n+90000,token:'MTK26',buka:false,izin:[]},{id:2,nama:'Sesi 2 (Jam 2)',mp:'Bahasa Indonesia',mulai:n+300000,token:'BIN26',buka:false,izin:[]}];S('sesi',s);return s}
+function boleh(s,ni){return Date.now()+OFF>=s.mulai||s.buka||s.izin.includes(ni)}
+function initSes(){const n=Date.now();let id=0;const s=[];PAKET.forEach(p=>JAD[p].forEach((r,i)=>{const[a,b]=r[1].split('-').map(t=>{const x=t.split(':');return x[0]*60+Number(x[1])});s.push({id:++id,pk:p,nama:r[0]+', '+r[1]+' WIB',hari:r[0],jam:r[1],mp:r[2],menit:b-a,mulai:n+60000+i*180000,token:tok(),buka:false,izin:[]})}));S('sesi',s);return s}
+function jadwalSiswa(){const H=L('hasil',[]);return`<div class="c wrap"><b>Jadwal Ujian ${esc(ME.pk)}</b><small class="mu"> (simulasi: waktu dipercepat)</small><table><tr><th>Hari</th><th>Jam</th><th>Mata Pelajaran</th><th>Status</th></tr>${SES().filter(s=>s.pk==ME.pk&&(!s.kl||s.kl==ME.kl)).map(s=>`<tr><td>${esc(s.hari)}</td><td>${esc(s.jam)}</td><td>${esc(s.mp)}</td><td>${H.some(h=>h.ni==ME.ni&&h.mp==s.mp)?'<span class="ok">Selesai</span>':boleh(s,ME.ni)?'Dibuka':'Menunggu'}</td></tr>`).join('')}</table></div>`}
+function nextS(){const H=L('hasil',[]);return SES().find(s=>s.pk==ME.pk&&(!s.kl||s.kl==ME.kl)&&!H.some(h=>h.ni==ME.ni&&h.mp==s.mp))}
+function masukLokal(){const ni=$('ni').value.trim(),p=PES().find(x=>x.ni==ni);if(!p)return alert('Nomor peserta tidak ditemukan. Hubungi proktor.');if(p.pw&&p.pw!==$('pw').value.trim())return alert('Password salah.');ME={nm:p.nm,ni:p.ni,pk:p.pk,kl:p.kl,rg:p.rg};tunggu()}
+function tunggu(){clearInterval(timer);clearInterval(poll);$('bar').classList.add('hide');const sel=nextS();if(USEFB&&sel)watchSesi(sel);
+if(!sel){A.innerHTML=`<h1>Semua sesi selesai</h1><div class="c">Terima kasih, ${esc(ME.nm)}. Seluruh jawaban sudah terkirim.</div><button onclick="home()">Keluar</button>`;return}
+A.innerHTML=`<h1>Konfirmasi Data Peserta</h1><div class="c"><table><tr><td>Nomor Peserta</td><td>${esc(ME.ni)}</td></tr><tr><td>Nama</td><td>${esc(ME.nm)}</td></tr><tr><td>Paket</td><td>${esc(ME.pk)}</td></tr><tr><td>Kelas</td><td>${esc(ME.kl||'-')}</td></tr><tr><td>Mata Ujian</td><td>${esc(sel.mp)}</td></tr><tr><td>Jadwal</td><td>${esc(sel.hari)}, ${esc(sel.jam)} WIB</td></tr></table><p id="cd" class="mu"></p>
+<input id="tk" placeholder="Token dari proktor" oninput="tbtn()" style="text-transform:uppercase"><label class="opt"><input type="checkbox" id="cf" onchange="tbtn()"> Data saya sudah benar dan saya siap mengerjakan</label>
+<button id="go" onclick="mulai('${sel.mp}',${sel.menit})" disabled>Mulai Ujian</button></div>${jadwalSiswa()}<button class="g" onclick="home()">Keluar</button>`;
+poll=setInterval(tbtn,1000);tbtn()}
+function tbtn(){const s=nextS();if(!s||!$('go'))return;const d=Math.round((s.mulai-Date.now()-OFF)/1000),b=boleh(s,ME.ni);
+$('cd').textContent=b?'Ujian sudah dibuka. Centang lalu klik Mulai.':'Ujian dibuka dalam '+Math.floor(d/60)+' menit '+d%60+' detik. Mohon menunggu.';$('go').disabled=!($('cf').checked&&b&&$('tk').value.trim().toUpperCase()===s.token)}
+function mulai0(mp,m){const nm=ME.nm,ni=ME.ni;
+const pk=ME.pk,key='sesi_'+ni+'_'+mp;
+if(L('hasil',[]).some(h=>h.ni==ni&&h.mp==mp))return alert('NIS ini sudah mengerjakan mapel tersebut.');
+st=L(key,null)||{nm,ni,mp,pk,key,a:{},f:{},i:0,end:Date.now()+(USEFB?(m||60):Math.min(m||60,15))*60000};S(key,st);ujian()}
+function ujian(){clearInterval(poll);$('bar').classList.remove('hide');$('tt').textContent=st.mp;$('pn').textContent=st.nm+' · '+st.ni;
+clearInterval(timer);timer=setInterval(tick,1000);tick();render()}
+function tick(){const s=Math.max(0,Math.round((st.end-Date.now())/1000));$('tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');if(!s){clearInterval(timer);kirim(true)}}
+function render(){const q=BANK[st.mp].q,x=q[st.i],a=st.a[st.i];
+A.innerHTML=`<div class="ex"><div class="qa"><div class="c"><div class="qh">Soal Nomor ${st.i+1} <span>${x.t=='pg'?'Pilihan Ganda':'Uraian / Esai'}</span></div>
+<p>${esc(x.s)}</p>${x.img?`<img src="${x.img}" alt="gambar soal">`:''}
+${x.t=='pg'?x.o.map((o,j)=>`<label class="opt ${a===j?'s':''}"><input type="radio" name="o" ${a===j?'checked':''} onchange="jwb(${j})"><b>${'ABCD'[j]}.</b> ${esc(o)}</label>`).join(''):`<textarea rows="6" placeholder="Tulis jawaban..." oninput="jwb(this.value)">${esc(a||'')}</textarea>`}
+<div class="row"><button class="g" onclick="go(${st.i-1})" ${st.i?'':'disabled'}>‹ Soal Sebelumnya</button><button class="g rg ${st.f[st.i]?'on':''}" onclick="flag()">${st.f[st.i]?'☑':'☐'} Ragu-ragu</button><button class="g" onclick="go(${st.i+1})" ${st.i<q.length-1?'':'disabled'}>Soal Berikutnya ›</button></div></div></div><aside class="side">
+<div class="c"><b>Daftar Soal</b><div class="grid" style="margin-top:8px">${q.map((_,n)=>`<b class="${st.a[n]!==undefined&&st.a[n]!==''?'d':''} ${st.f[n]?'f':''} ${n==st.i?'cur':''}" onclick="go(${n})">${n+1}</b>`).join('')}</div></div>
+<div class="c"><small><span class="sw d"></span>Sudah dijawab<br><span class="sw f"></span>Ragu-ragu<br><span class="sw"></span>Belum dijawab</small></div><p class="mu"><small>Terjawab ${q.filter((_,i)=>!(st.a[i]===undefined||String(st.a[i]).trim()==='')).length} dari ${q.length}. Semua soal wajib dijawab sebelum kirim.</small></p><button class="fin" onclick="kirim(false)">Selesai &amp; Kirim Jawaban</button><p class="mu"><small>Jawaban tersimpan otomatis di perangkat. Jika koneksi/browser mati, buka lagi dan lanjutkan.</small></p></aside></div>`}
+let FS=16;function fz(d){FS=Math.min(24,Math.max(13,FS+d*2));document.documentElement.style.fontSize=FS+'px'}
+function jwb(v){st.a[st.i]=v;S(st.key,st);if(BANK[st.mp].q[st.i].t=='pg')render()}
+function flag(){st.f[st.i]=!st.f[st.i];S(st.key,st);render()}
+function go(n){st.i=n;S(st.key,st);render()}
+function kirim(auto){const q=BANK[st.mp].q;const em=i=>st.a[i]===undefined||String(st.a[i]).trim()==='';const kosong=q.filter((_,i)=>em(i)).length;
+if(!auto){if(kosong){const m=q.map((_,i)=>i).filter(em);st.i=m[0];S(st.key,st);render();return alert('Masih ada '+kosong+' soal belum dijawab (nomor '+m.map(i=>i+1).join(', ')+'). Semua soal wajib diisi sebelum jawaban dikirim.')}if(!confirm('Semua soal sudah terjawab. Kirim jawaban sekarang? Jawaban tidak dapat diubah setelah dikirim.'))return}
+clearInterval(timer);let b=0,n=0;q.forEach((x,i)=>{if(x.t=='pg'){n++;if(st.a[i]===x.k)b++}});
+const h={nm:st.nm,ni:st.ni,pk:st.pk,mp:st.mp,a:st.a,b,n,skor:n?Math.round(b/n*100):0,es:{},waktu:new Date().toLocaleString('id-ID')};
+const all=L('hasil',[]);if(USEFB){const s=nextS();h.id=sid(s.id)+'_'+ME.hk;h.sid=s.id;h.kl=ME.kl;h.ts=Date.now()+OFF;antri(h)}all.push(h);S('hasil',all);try{localStorage.removeItem(st.key)}catch(e){}hasil(h)}
+function hasil(h){$('bar').classList.add('hide');const q=BANK[h.mp].q;
+A.innerHTML=`<h1>Hasil Ujian</h1><div class="c"><b>${esc(h.nm)}</b> · ${esc(h.pk)} · ${esc(h.mp)}<h2>Skor PG: ${h.skor} <small>(${h.b} benar dari ${h.n})</small></h2><small>Nilai esai diberikan guru setelah diperiksa.</small></div>
+${q.map((x,i)=>{if(x.t=='es')return`<div class="c"><small>Soal ${i+1} · Esai</small><p>${esc(x.s)}</p><div class="mu">Jawabanmu: ${esc(h.a[i]||'(kosong)')}</div></div>`;
+const ok=h.a[i]===x.k;return`<div class="c"><small>Soal ${i+1}</small> <b class="${ok?'ok':'no'}">${ok?'✔ Benar':'✘ Salah'}</b><p>${esc(x.s)}</p>${x.img?`<img src="${x.img}" alt="">`:''}
+${x.o.map((o,j)=>`<div class="opt ${j===x.k?'ok':h.a[i]===j?'no':''}"><b>${'ABCD'[j]}.</b> ${esc(o)} ${j===x.k?'✔':h.a[i]===j?'(jawabanmu)':''}</div>`).join('')}</div>`}).join('')}
+<button onclick="tunggu()">Lanjut ke Sesi Berikutnya</button>`}
+function adminLokal(){const a=L('akun',{u:'admin',p:'admin123'});if($('au').value.trim()!==a.u||$('pin').value!==a.p)return alert('Username atau password salah');adm()}
+function akun(){const u=$('nu').value.trim(),p=$('np').value;if(!u||p.length<6)return alert('Username wajib diisi, password minimal 6 karakter');S('akun',{u,p});alert('Akun admin diperbarui');adm()}
+function akunHTML(){return`<div class="c"><h2>Akun Admin</h2><input id="nu" placeholder="Username baru"><input id="np" type="password" placeholder="Password baru (min. 6 karakter)"><button onclick="akun()">Simpan akun admin</button></div>`}
+function adm(){const H=L('hasil',[]);
+A.innerHTML=`<h1>Panel Admin / Proktor</h1>${sesiHTML()}${jdwHTML()}${bankHTML()}${koreksiHTML()}${rekapHTML()}${pesHTML()}${USEFB?'':akunHTML()}<div class="c"><div class="row"><div><b>${H.length}</b><br><small>peserta selesai</small></div><div><b>${H.length?Math.round(H.reduce((s,h)=>s+h.skor,0)/H.length):0}</b><br><small>rata-rata skor PG</small></div></div>
+<div class="row"><button onclick="csv()">Unduh Hasil &amp; Nilai (CSV)</button><button class="g" onclick="csvJawab()">Unduh Jawaban per Soal (CSV)</button><button class="g" onclick="gen(60)">Isi 60 data contoh</button></div><button class="g" onclick="if(confirm('Hapus semua hasil?')){S('hasil',[]);adm()}">Hapus semua hasil</button></div>
+<div class="c wrap"><table><tr><th>Nama</th><th>Paket</th><th>Mapel</th><th>PG</th><th>Nilai Akhir</th><th>Esai</th></tr>
+${H.slice(-60).reverse().map((h,i)=>{const r=H.length-1-i,q=BANK[h.mp].q;return`<tr><td>${esc(h.nm)}<br><small>${esc(h.ni)}</small></td><td>${esc(h.pk)}</td><td>${esc(h.mp)}</td><td>${h.skor}</td><td><b>${nilai(h).fin??'-'}</b></td>
+<td>${q.map((x,k)=>x.t=='es'?`<small>${esc(h.a[k]||'(kosong)')}</small><br><input type="number" min="0" max="100" placeholder="Nilai" value="${h.es[k]??''}" onchange="nes(${r},${k},this.value)">`:'').join('')}</td></tr>`}).join('')||'<tr><td colspan=5>Belum ada data</td></tr>'}</table></div>
+<button class="g" onclick="home()">Keluar</button>`}
+function sesiHTML(){return`<div class="c"><b>Kelola sesi per paket:</b><select onchange="FP=this.value;adm()">${PAKET.map(p=>`<option ${p==FP?'selected':''}>${p}</option>`).join('')}</select><select onchange="FK=this.value;adm()">${['Semua',...new Set(SES().filter(s=>s.pk==FP).map(s=>s.kl).filter(Boolean))].map(k=>`<option ${k==FK?'selected':''}>${k}</option>`).join('')}</select>${USEFB?'':'<small>Simulasi: durasi ujian dipersingkat maks. 15 menit; sesi demo dibuka otomatis tiap 3 menit.</small>'}<div class="row"><button class="g" onclick="bulk('buka')">Mulai semua yang tampil</button><button class="g" onclick="bulk('token')">Acak token semua yang tampil</button></div></div>`+SES().filter(s=>s.pk==FP&&(FK=='Semua'||s.kl==FK)).map(s=>{const st=s.buka?'DIBUKA PROKTOR':Date.now()>=s.mulai?'Berjalan':'Mulai '+new Date(s.mulai).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+return`<div class="c"><b>${esc(s.nama)}</b> · ${esc(s.mp)} <span class="tag">${st}</span> Token: <b>${s.token}</b>
+<div class="row"><button onclick="sa(${s.id},'buka')">Mulai sekarang (semua)</button><button class="g" onclick="sa(${s.id},'tunda')">Tunda +5 mnt</button><button class="g" onclick="sa(${s.id},'token')">Acak token</button></div>
+<div class="row"><input id="iz${s.id}" placeholder="NIS siswa (sakit/susulan)"><button class="g" onclick="sa(${s.id},'izin')">Izinkan mulai</button></div>
+<small>Izin khusus: ${s.izin.join(', ')||'-'}</small></div>`}).join('')+'<div class="row"><button class="g" onclick="adm()">Segarkan</button><button class="g" onclick="S(\'sesi\',null);adm()">Reset jadwal demo</button></div>'}
+function sa(id,a){const X=SES(),s=X.find(x=>x.id==id);if(a=='token')s.token=tok();if(a=='buka')s.buka=true;if(a=='tunda'){s.buka=false;s.mulai=Math.max(Date.now(),s.mulai)+300000}if(a=='izin'){const v=$('iz'+id).value.trim();if(v&&!s.izin.includes(v))s.izin.push(v)}S('sesi',X);pushSesi(s);adm()}
+function pesHTML(){const P=PES();return`<div class="c"><h2>Data Peserta (${P.length})</h2><button onclick="tpl()">⬇ Unduh template Excel (isi, lalu unggah ulang)</button><small>Tempel dari Excel: NoPeserta,Nama,Paket,Kelas,Password,Ruang per baris</small><textarea id="impx" rows="4" placeholder="2026010,Nama Siswa,Paket C IPA"></textarea><small>Atau unggah file Excel dari template (menggantikan seluruh data peserta):</small><input type="file" id="fx" accept=".xlsx,.xls,.csv" onchange="upl(this)"><div class="row"><button onclick="imp()">Impor</button><button class="g" onclick="S('peserta',null);adm()">Reset contoh</button></div><div class="row"><select id="kp"><option>Semua paket</option>${PAKET.map(p=>`<option>${p}</option>`).join('')}</select><button onclick="kartu()">⬇ Unduh Kartu Peserta (PDF)</button></div><div class="wrap"><table><tr><th>No Peserta</th><th>Nama</th><th>Paket</th><th>Kelas</th><th>Password</th><th>Ruang</th></tr>${P.slice(0,30).map(p=>`<tr><td>${esc(p.ni)}</td><td>${esc(p.nm)}</td><td>${esc(p.pk)}</td><td>${esc(p.kl||'-')}</td><td>${esc(p.pw||'-')}</td><td>${esc(p.rg||'-')}</td></tr>`).join('')}</table></div></div>`}
+function upl(el){const f=el.files[0];if(!f)return;if(typeof XLSX==='undefined')return alert('Pembaca Excel gagal dimuat. Periksa internet atau pakai tempel data.');
+const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(e.target.result,{type:'array'}),rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,raw:false,defval:''});
+const P=[],ok=['Paket A','Paket B','Paket C IPA','Paket C IPS'],seen={};let salah=[],dup=0;
+rows.slice(1).forEach((x,i)=>{const ni=String(x[0]).trim(),nm=String(x[1]).trim(),pk=String(x[2]).trim(),kl=String(x[3]??'').trim(),pw=String(x[4]??'').trim(),rg=String(x[5]??'').trim();if(!ni&&!nm&&!pk)return;
+if(!ni||!nm||!ok.includes(pk)){salah.push(i+2);return}if(seen[ni]){dup++;return}seen[ni]=1;P.push({ni,nm,pk,kl,pw,rg})});
+if(!P.length)return alert('Tidak ada data valid. Pastikan memakai template (kolom A, B, C) dan data mulai baris 2.');
+S('peserta',P);pushPes(P);alert(P.length+' peserta berhasil diimpor.'+(dup?'\n'+dup+' nomor ganda dilewati.':'')+(salah.length?'\nBaris bermasalah: '+salah.slice(0,20).join(', ')+(salah.length>20?' ...':''):''));adm()}catch(err){alert('File tidak dapat dibaca: '+err.message)}};r.readAsArrayBuffer(f)}
+function imp(){const P=PES();$('impx').value.split('\n').forEach(l=>{const[ni,nm,pk,kl,pw,rg]=l.split(/[,\t;]/).map(x=>x.trim());if(ni&&nm&&!P.some(p=>p.ni==ni))P.push({ni,nm,pk:pk||'Paket A',kl:kl||'',pw:pw||'',rg:rg||''})});S('peserta',P);pushPes(P);adm()}
+async function simpan(nama,data){try{if(window.claude&&claude.use){const d=await claude.use('downloads');if(d){await d.save({filename:nama,data});return}}
+const u=URL.createObjectURL(new Blob([data])),a=document.createElement('a');a.href=u;a.download=nama;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}catch(e){if(!e||e.code!=='declined')alert('Gagal menyimpan: '+((e&&(e.message||e.code))||e))}}
+function csvJawab(){const H=L('hasil',[]),r=[['Nama','Nomor Peserta','Paket','Mapel','No Soal','Jenis','Jawaban Siswa','Kunci','Hasil','Nilai Esai']];
+H.forEach(h=>BANK[h.mp].q.forEach((x,i)=>{const a=h.a[i];if(x.t=='pg')r.push([h.nm,h.ni,h.pk,h.mp,i+1,'PG',a===undefined?'':'ABCD'[a],'ABCD'[x.k],a===x.k?'Benar':'Salah','']);else r.push([h.nm,h.ni,h.pk,h.mp,i+1,'Esai',a||'','','Dinilai guru',h.es[i]??''])}));
+simpan('jawaban-siswa.csv','\ufeff'+toCsv(r))}
+async function kartu(){const J=window.jspdf&&window.jspdf.jsPDF;if(!J)return alert('Pembuat PDF gagal dimuat. Periksa internet.');
+const f=$('kp').value,P=PES().filter(p=>f=='Semua paket'||p.pk==f);if(!P.length)return alert('Belum ada data peserta untuk pilihan ini.');
+const d=new J({unit:'mm',format:'a4'});
+P.forEach((p,i)=>{if(i&&i%8==0)d.addPage();const k=i%8,x=7.5+(k%2)*100,y=10+Math.floor(k/2)*70;
+d.setDrawColor(21,101,192);d.setLineWidth(.4);d.roundedRect(x,y,95,62,2,2);d.setFillColor(21,101,192);d.rect(x,y,95,13,'F');
+d.setTextColor(255,255,255);d.setFont('helvetica','bold');d.setFontSize(9);d.text('KARTU PESERTA ASESMEN SEMESTER GANJIL',x+47.5,y+5.5,{align:'center'});d.setFont('helvetica','normal');d.setFontSize(7.5);d.text('PKBM Ristek Nusantara Jaya',x+47.5,y+10,{align:'center'});
+const rows=[['Nama',p.nm],['Nomor Peserta',p.ni+'  (username)'],['Password',p.pw||'-'],['Paket / Kelas',p.pk+' / Kelas '+(p.kl||'-')],['Ruang',p.rg||'-']];
+rows.forEach((r,j)=>{const yy=y+21+j*7.5;d.setTextColor(90,90,90);d.setFont('helvetica','normal');d.setFontSize(8);d.text(r[0],x+5,yy);d.setTextColor(20,20,20);d.setFont('helvetica','bold');d.setFontSize(9);d.text(': '+String(r[1]).slice(0,34),x+32,yy)});
+d.setTextColor(110,110,110);d.setFont('helvetica','normal');d.setFontSize(6);d.text('Jaga kerahasiaan password. Token ujian diberikan proktor di ruang ujian.',x+47.5,y+57,{align:'center'});d.text('Gannos Digital Indonesia',x+47.5,y+60.5,{align:'center'})});
+await simpan('kartu-peserta'+(f=='Semua paket'?'':'-'+f.replace(/ /g,'-'))+'.pdf',d.output('arraybuffer'))}
+function toCsv(r){return r.map(x=>x.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n')}
+function CFG(){return L('cfg',{pg:70,kkm:70})}
+function cfg(){const p=Number($('bw').value),k=Number($('kk').value);if(isNaN(p)||isNaN(k)||p<0||p>100||k<0||k>100)return alert('Isi angka 0-100');S('cfg',{pg:p,kkm:k});adm()}
+function nilai(h){const q=BANK[h.mp].q,es=q.map((x,i)=>x.t=='es'?i:-1).filter(i=>i>=0),c=CFG();if(!es.length)return{pg:h.skor,es:null,fin:h.skor};
+const sc=es.map(i=>h.es[i]),done=sc.every(v=>v!==undefined&&v!==''),e=done?Math.round(sc.reduce((s,v)=>s+Number(v),0)/sc.length):null;
+return{pg:h.skor,es:e,fin:done?Math.round(h.skor*c.pg/100+e*(100-c.pg)/100):null}}
+function rekapData(){const H=L('hasil',[]),M=[...new Set(H.map(h=>h.mp))],by={};H.forEach(h=>{const b=by[h.ni]=by[h.ni]||{nm:h.nm,pk:h.pk,m:{}};b.m[h.mp]=nilai(h).fin});
+return{M,rows:Object.entries(by).map(([ni,r])=>{const v=M.map(m=>r.m[m]),ok=v.filter(x=>typeof x==='number');return{ni,nm:r.nm,pk:r.pk,v,av:ok.length?Math.round(ok.reduce((s,x)=>s+x,0)/ok.length):null}})}}
+function rekapHTML(){const d=rekapData(),c=CFG();return`<div class="c"><h2>Rekap Nilai untuk Raport</h2><div class="row"><div><small>Bobot PG (%)</small><input id="bw" type="number" min="0" max="100" value="${c.pg}"></div><div><small>KKM</small><input id="kk" type="number" min="0" max="100" value="${c.kkm}"></div></div>
+<small>Nilai akhir = nilai PG × bobot + rata-rata nilai esai × (100 − bobot). Nilai akhir muncul setelah semua esai dinilai guru. Hijau = tuntas (≥ KKM), merah = belum tuntas.</small>
+<div class="row"><button class="g" onclick="cfg()">Simpan bobot &amp; KKM</button><button onclick="rekapCsv()">Unduh rekap raport (CSV)</button></div>
+<div class="wrap"><table><tr><th>Nama</th><th>Paket</th>${d.M.map(m=>`<th>${esc(m)}</th>`).join('')}<th>Rata-rata</th></tr>
+${d.rows.map(r=>`<tr><td>${esc(r.nm)}<br><small>${esc(r.ni)}</small></td><td>${esc(r.pk)}</td>${r.v.map(x=>`<td class="${typeof x==='number'?(x>=c.kkm?'ok':'no'):''}">${x===undefined?'-':x===null?'<small>esai belum dinilai</small>':x}</td>`).join('')}<td><b>${r.av??'-'}</b></td></tr>`).join('')||`<tr><td colspan="${d.M.length+3}">Belum ada data</td></tr>`}</table></div></div>`}
+function rekapCsv(){const d=rekapData();simpan('rekap-nilai-raport.csv','\ufeff'+toCsv([['Nomor Peserta','Nama','Paket',...d.M,'Rata-rata']].concat(d.rows.map(r=>[r.ni,r.nm,r.pk,...r.v.map(x=>x??''),r.av??'']))))}
+function csv(){const H=L('hasil',[]);simpan('hasil-cbt.csv','\ufeff'+toCsv([['Nama','NIS','Paket','Mapel','Benar','Total PG','Skor PG','Nilai Esai','Nilai Akhir']].concat(H.map(h=>{const n=nilai(h);return[h.nm,h.ni,h.pk,h.mp,h.b,h.n,h.skor,n.es??'',n.fin??'']}))))}
+function tpl(){if(typeof XLSX==='undefined')return alert('Pembaca Excel gagal dimuat. Periksa internet.');const w=XLSX.utils.book_new(),s=XLSX.utils.aoa_to_sheet([['Nomor Peserta','Nama Lengkap','Paket','Kelas','Password','Ruang']]);s['!cols']=[{wch:22},{wch:40},{wch:18},{wch:10},{wch:16},{wch:16}];XLSX.utils.book_append_sheet(w,s,'Peserta');
+const p=XLSX.utils.aoa_to_sheet([['PETUNJUK'],['Isi data mulai baris 2 pada sheet Peserta. A = Nomor Peserta (username login, harus unik), B = Nama Lengkap, C = Paket, D = Kelas (1-6 / VII-IX / X-XII), E = Password (boleh dikosongkan), F = Ruang (boleh dikosongkan).'],['Isi kolom C persis: Paket A / Paket B / Paket C IPA / Paket C IPS'],['Setelah diisi, simpan lalu unggah di Panel Admin > Data Peserta.'],[],['Contoh (jangan ditulis di sheet Peserta):'],['Nomor Peserta','Nama Lengkap','Paket','Kelas','Password','Ruang'],['2026001','Budi Santoso','Paket A','IV','ristek01','Lt.2 R.Kelas']]);p['!cols']=[{wch:22},{wch:40},{wch:18},{wch:10},{wch:16},{wch:16}];XLSX.utils.book_append_sheet(w,p,'Petunjuk');
+simpan('template-data-peserta-cbt.xlsx',XLSX.write(w,{bookType:'xlsx',type:'array'}))}
+let KP='Semua',KM='Semua',KS='belum';
+function koreksiHTML(){const H=L('hasil',[]),it=[];
+H.forEach((h,r)=>BANK[h.mp].q.forEach((x,k)=>{if(x.t!='es')return;if(KP!='Semua'&&h.pk!=KP)return;if(KM!='Semua'&&h.mp!=KM)return;const v=h.es[k],done=v!==undefined&&v!=='';if(KS=='belum'&&done)return;it.push({h,r,k,x,v})}));
+const mp=['Semua',...new Set(H.map(h=>h.mp))],tot=H.reduce((s,h)=>s+BANK[h.mp].q.filter((x,k)=>x.t=='es'&&(h.es[k]===undefined||h.es[k]==='')).length,0);
+return`<div class="c"><h2>Koreksi Esai / Isian Singkat</h2>${USEFB?'<button class="g" onclick="tarik()">Tarik hasil dari Firebase (paket dan kelas yang dipilih di Kelola sesi)</button>':''}<small>${tot} jawaban belum dinilai. Nilai 0-100 tersimpan otomatis dan langsung masuk ke nilai akhir.</small><div class="row"><select onchange="KP=this.value;adm()">${['Semua',...PAKET].map(p=>`<option ${p==KP?'selected':''}>${p}</option>`).join('')}</select><select onchange="KM=this.value;adm()">${mp.map(m=>`<option ${m==KM?'selected':''}>${esc(m)}</option>`).join('')}</select><select onchange="KS=this.value;adm()"><option value="belum" ${KS=='belum'?'selected':''}>Belum dinilai</option><option value="semua" ${KS=='semua'?'selected':''}>Semua</option></select></div></div>`
++(it.slice(0,30).map(o=>`<div class="c"><b>${esc(o.h.nm)}</b> <span class="tag">${esc(o.h.pk)}</span> <span class="tag">${esc(o.h.mp)}</span><p><small>Soal: ${esc(o.x.s)}</small></p><div style="white-space:pre-wrap;border:1px solid var(--bd);border-radius:8px;padding:8px">${esc(o.h.a[o.k]||'(tidak dijawab)')}</div><input type="number" min="0" max="100" placeholder="Nilai 0-100" value="${o.v??''}" onchange="nes(${o.r},${o.k},this.value)"></div>`).join('')||'<div class="c"><small>Tidak ada jawaban esai untuk filter ini.</small></div>')+(it.length>30?'<small>Menampilkan 30 pertama. Nilai dulu agar daftar berikutnya muncul.</small>':'')}
+function nes(r,k,v){const H=L('hasil',[]);H[r].es[k]=v===''?'':Math.min(100,Math.max(0,Number(v)));S('hasil',H);if(USEFB&&H[r].id)fset('hasil',H[r].id,{es:{[k]:H[r].es[k]}},true).catch(e=>alert('Gagal simpan nilai: '+(e.code||e.message)));adm()}
+function gen(n){const H=L('hasil',[]),M=Object.keys(BANK),P=['Paket A','Paket B','Paket C IPA','Paket C IPS'];
+for(let i=0;i<n;i++){const pk=P[i%4],mp=JAD[pk][Math.floor(i/4)%JAD[pk].length][2],q=BANK[mp].q,a={};let b=0,t=0;q.forEach((x,j)=>{if(x.t=='pg'){t++;a[j]=Math.random()<.6?x.k:0;if(a[j]===x.k)b++}else a[j]='Jawaban esai contoh'});
+H.push({nm:'Siswa '+(H.length+1),ni:'D'+String(1000+H.length),pk,mp,a,b,n:t,skor:Math.round(b/t*100),es:{},waktu:''})}S('hasil',H);adm()}
+const FB={apiKey:"AIzaSyCa20bArNDRFl_LHRQIhLUxLc_M6qWtGs8",authDomain:"cbt-ujian-1423e.firebaseapp.com",projectId:"cbt-ujian-1423e",storageBucket:"cbt-ujian-1423e.firebasestorage.app",messagingSenderId:"535659502943",appId:"1:535659502943:web:21392193d7e5ce0fa32aea"};
+const USEFB=!!FB.apiKey&&!/claude/i.test(location.hostname);
+let _f=null,_un=null,OFF=0,FK='Semua';
+async function fx(){if(_f)return _f;const b='https://www.gstatic.com/firebasejs/10.14.1/',[a,s,u]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-firestore.js'),import(b+'firebase-auth.js')]),app=a.initializeApp(FB);_f={s,u,db:s.getFirestore(app),au:u.getAuth(app)};return _f}
+async function fget(c,id){const f=await fx(),d=await f.s.getDoc(f.s.doc(f.db,c,id));return d.exists()?d.data():null}
+async function fset(c,id,v,m){const f=await fx();return f.s.setDoc(f.s.doc(f.db,c,id),v,{merge:!!m})}
+async function fbatch(c,arr){const f=await fx();for(let i=0;i<arr.length;i+=400){const b=f.s.writeBatch(f.db);arr.slice(i,i+400).forEach(([id,v])=>b.set(f.s.doc(f.db,c,id),v,{merge:true}));await b.commit()}}
+async function flist(c,w){const f=await fx(),r=await f.s.getDocs(f.s.query(f.s.collection(f.db,c),...w.map(x=>f.s.where(...x))));return r.docs.map(d=>({id:d.id,...d.data()}))}
+async function fwatch(c,id,cb){const f=await fx();return f.s.onSnapshot(f.s.doc(f.db,c,id),d=>{if(d.exists())cb(d.data())})}
+async function sha(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+const sid=s=>String(s).replace(/[\/\s·]+/g,'-');
+async function masuk(){if(!USEFB)return masukLokal();const ni=$('ni').value.trim(),pw=$('pw').value.trim();try{const p=await fget('peserta',ni);if(!p)return alert('Nomor peserta tidak ditemukan. Hubungi proktor.');if(p.ph&&p.ph!==await sha(ni+':'+pw))return alert('Password salah.');ME={nm:p.nm,ni,pk:p.pk,kl:p.kl,rg:p.rg,hk:(p.ph||await sha(ni)).slice(0,16)};await tarikJadwal();tunggu()}catch(e){alert('Tidak dapat terhubung ke server: '+(e.message||e))}}
+async function tarikJadwal(){const d=await fget('jadwal',sid(ME.pk+'_'+ME.kl));if(!d)throw new Error('Jadwal untuk '+ME.pk+' kelas '+ME.kl+' belum tersedia.');const o=L('sesi',[]).filter(s=>!(s.pk==ME.pk&&s.kl==ME.kl));S('sesi',o.concat(d.items.map(i=>({...i,pk:ME.pk,kl:ME.kl,nama:i.hari+', '+i.jam+' WIB',token:'',buka:false,izin:[]}))))}
+async function watchSesi(sel){try{if(_un){_un();_un=null}_un=await fwatch('sesi',sid(sel.id),d=>{const X=L('sesi',[]),s=X.find(x=>x.id==sel.id);if(s){Object.assign(s,{buka:!!d.buka,mulai:d.mulai??s.mulai,token:d.token||'',izin:d.izin||[]});S('sesi',X)}})}catch(e){}}
+async function mulai(mp,m){if(USEFB){try{const s=nextS(),hid=sid(s.id)+'_'+ME.hk;if(await fget('hasil',hid)){const H=L('hasil',[]);H.push({id:hid,nm:ME.nm,ni:ME.ni,pk:ME.pk,mp,a:{},b:0,n:0,skor:0,es:{},waktu:'terkirim sebelumnya'});S('hasil',H);alert('Jawaban untuk sesi ini sudah terkirim sebelumnya.');return tunggu()}const bk=await fget('bank',sid(mp));if(!bk||!bk.q||!bk.q.length)return alert('Soal untuk sesi ini belum tersedia. Hubungi proktor.');BANK[mp]={q:bk.q}}catch(e){return alert('Gagal memuat soal: '+(e.message||e))}}mulai0(mp,m)}
+function antri(h){const q=L('outbox',[]);q.push(h);S('outbox',q);flush()}
+async function flush(){if(!USEFB)return;for(const h of L('outbox',[])){try{await fset('hasil',h.id,{ni:h.ni,nm:h.nm,pk:h.pk,kl:h.kl||'',mp:h.mp,sid:h.sid,a:JSON.parse(JSON.stringify(h.a)),ts:h.ts,es:{}});S('outbox',L('outbox',[]).filter(x=>x.id!=h.id))}catch(e){if(e&&e.code=='permission-denied')S('outbox',L('outbox',[]).filter(x=>x.id!=h.id))}}}
+setInterval(flush,15000);
+async function admin(){if(!USEFB)return adminLokal();try{const f=await fx();await f.u.signInWithEmailAndPassword(f.au,$('au').value.trim(),$('pin').value);adm()}catch(e){alert('Login admin gagal: '+(e.code||e.message))}}
+function pushSesi(s){if(USEFB)fset('sesi',sid(s.id),{buka:!!s.buka,mulai:s.mulai,token:s.token||'',izin:s.izin||[]},true).catch(e=>alert('Gagal menyimpan ke Firebase: '+(e.code||e.message)))}
+function bulk(a){const X=SES(),V=X.filter(s=>s.pk==FP&&(FK=='Semua'||s.kl==FK)),t=tok();V.forEach(s=>{if(a=='buka')s.buka=true;else s.token=t});S('sesi',X);V.forEach(pushSesi);adm()}
+async function pushPes(P){if(!USEFB)return;try{const r=[];for(const p of P)r.push([p.ni,{nm:p.nm,pk:p.pk,kl:p.kl||'',rg:p.rg||'',ph:p.pw?await sha(p.ni+':'+p.pw):''}]);await fbatch('peserta',r);alert(P.length+' peserta tersimpan di Firebase.')}catch(e){alert('Gagal menyimpan peserta ke Firebase: '+(e.code||e.message))}}
+async function tarik(){try{const w=[['pk','==',FP]];if(FK!='Semua')w.push(['kl','==',FK]);const R=await flist('hasil',w),H=L('hasil',[]).filter(h=>!(h.id&&R.some(r=>r.id==h.id)));R.forEach(r=>{const q=(BANK[r.mp]||{q:[]}).q;let b=0,n=0;q.forEach((x,i)=>{if(x.t=='pg'){n++;if(r.a[i]===x.k)b++}});H.push({id:r.id,nm:r.nm,ni:r.ni,pk:r.pk,kl:r.kl,mp:r.mp,a:r.a,es:r.es||{},b,n,skor:n?Math.round(b/n*100):0,waktu:r.ts?new Date(r.ts).toLocaleString('id-ID'):''})});S('hasil',H);alert(R.length+' hasil ditarik (sebanyak itu pembacaan Firestore).');adm()}catch(e){alert('Gagal menarik hasil: '+(e.code||e.message))}}
+async function muatSesi(){try{const J=await flist('jadwal',[]),T=await flist('sesi',[]),m={},X=[];T.forEach(s=>m[s.id]=s);J.forEach(g=>g.items.forEach(i=>{const d=m[i.id]||{};X.push({...i,pk:g.pk,kl:g.kl,nama:i.hari+', '+i.jam+' WIB',token:d.token||tok(),buka:!!d.buka,mulai:d.mulai??i.mulai,izin:d.izin||[]})}));S('sesi',X);alert(X.length+' sesi dimuat.');adm()}catch(e){alert('Gagal memuat sesi: '+(e.code||e.message))}}
+function xrows(el,cb){const f=el.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const w=XLSX.read(e.target.result,{type:'array'});cb(XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]],{header:1,raw:false,defval:''}).slice(1).map(x=>x.map(c=>String(c).trim())).filter(x=>x.some(Boolean)))}catch(err){alert('File tidak dapat dibaca: '+err.message)}};r.readAsArrayBuffer(f)}
+function tgl(s){let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);return m?m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0'):null}
+function jam(s){const m=s.match(/^(\d{1,2})[:.](\d{2})/);return m?m[1].padStart(2,'0')+':'+m[2]:null}
+function jdwHTML(){return`<div class="c"><h2>Jadwal Ujian (Excel)</h2><small>Kolom: Paket, Kelas, Tanggal (YYYY-MM-DD), Jam Mulai, Jam Selesai, Mapel, Pengawas, Ruang. Format kolom Tanggal dan Jam sebagai Teks. Unggah ulang untuk mengganti jadwal (token sesi dibuat ulang).</small><div class="row"><button class="g" onclick="tplJ()">⬇ Template jadwal</button>${USEFB?'<button class="g" onclick="muatSesi()">Muat sesi dari server</button>':''}</div><input type="file" accept=".xlsx,.xls,.csv" onchange="impJ(this)"></div>`}
+function tplJ(){const w=XLSX.utils.book_new();XLSX.utils.book_append_sheet(w,XLSX.utils.aoa_to_sheet([['Paket','Kelas','Tanggal','Jam Mulai','Jam Selesai','Mapel','Pengawas','Ruang'],['Paket A','4','2026-12-01','09:00','10:00','Bahasa Indonesia','Nama Pengawas','Lt.2 R.Kelas']]),'Jadwal');simpan('template-jadwal-ujian.xlsx',XLSX.write(w,{bookType:'xlsx',type:'array'}))}
+function impJ(el){xrows(el,async R=>{const ok=['Paket A','Paket B','Paket C IPA','Paket C IPS'],G={},bad=[];
+R.forEach((x,i)=>{const[pk,kl,t,a,b,mp,pg,rg]=x,T=tgl(t||''),A=jam(a||''),B=jam(b||'');if(!ok.includes(pk)||!kl||!T||!A||!B||!mp){bad.push(i+2);return}const ms=Date.parse(T+'T'+A+':00+07:00'),me=Date.parse(T+'T'+B+':00+07:00'),k=sid(pk+'_'+kl);(G[k]=G[k]||{pk,kl,items:[]}).items.push({id:sid(pk+'_'+kl+'_'+T+'_'+A+'_'+mp),hari:T,jam:A+'-'+B,mp:mp+' · Kelas '+kl,menit:Math.round((me-ms)/60000),mulai:ms,pg:pg||'',rg:rg||''})});
+if(!Object.keys(G).length)return alert('Tidak ada baris valid. Periksa format template.');
+const X=[];Object.values(G).forEach(g=>{g.items.sort((a,b)=>a.mulai-b.mulai);g.items.forEach(i=>X.push({...i,pk:g.pk,kl:g.kl,nama:i.hari+', '+i.jam+' WIB',token:tok(),buka:false,izin:[]}))});S('sesi',X);
+if(USEFB){try{await fbatch('jadwal',Object.entries(G).map(([k,g])=>[k,{pk:g.pk,kl:g.kl,items:g.items}]));await fbatch('sesi',X.map(s=>[sid(s.id),{buka:false,mulai:s.mulai,token:s.token,izin:[]}]))}catch(e){return alert('Gagal menyimpan jadwal ke Firebase: '+(e.code||e.message))}}
+alert(X.length+' sesi dibuat'+(bad.length?'. Baris bermasalah: '+bad.slice(0,15).join(', '):'')+'.');adm()})}
+function bankHTML(){const B=L('bank',{}),ks=Object.keys(B);return`<div class="c"><h2>Bank Soal (Excel)</h2><small>Kolom: Kelas, Mapel, Jenis (PG/ESAI), Soal, A, B, C, D, E, Kunci (A-E), Gambar (alamat URL, boleh kosong). Satu file boleh berisi banyak kelas dan mapel. Nama Mapel dan Kelas harus sama dengan di jadwal.</small><div class="row"><button class="g" onclick="tplB()">⬇ Template bank soal</button></div><input type="file" accept=".xlsx,.xls,.csv" onchange="impB(this)"><div class="wrap"><table><tr><th>Mapel / Kelas</th><th>PG</th><th>Esai</th><th>PG tanpa kunci</th></tr>${ks.map(k=>{const q=B[k].q,nk=q.filter(x=>x.t=='pg'&&x.k==null).length;return`<tr><td>${esc(k)}</td><td>${q.filter(x=>x.t=='pg').length}</td><td>${q.filter(x=>x.t=='es').length}</td><td class="${nk?'no':''}">${nk}</td></tr>`}).join('')||'<tr><td colspan="4">Belum ada bank soal</td></tr>'}</table></div></div>`}
+function tplB(){const w=XLSX.utils.book_new();XLSX.utils.book_append_sheet(w,XLSX.utils.aoa_to_sheet([['Kelas','Mapel','Jenis','Soal','A','B','C','D','E','Kunci','Gambar'],['4','Matematika','PG','12 + 8 = ...','18','20','22','24','','B',''],['4','Matematika','ESAI','Jelaskan cara menjumlahkan bilangan puluhan.','','','','','','','']]),'Bank Soal');simpan('template-bank-soal.xlsx',XLSX.write(w,{bookType:'xlsx',type:'array'}))}
+function impB(el){xrows(el,async R=>{const B={},bad=[];R.forEach((x,i)=>{const[kl,mp,j,s,a,b,c,d,e,kn,img]=x;if(!kl||!mp||!s){bad.push(i+2);return}const k=mp+' · Kelas '+kl,q={t:/^es/i.test(j||'')?'es':'pg',s};if(q.t=='pg'){const o=[a,b,c,d,e].filter(Boolean);if(o.length<2){bad.push(i+2);return}q.o=o;const ki='ABCDE'.indexOf((kn||'').toUpperCase().slice(0,1));q.k=ki>=0&&ki<o.length?ki:null}if(img)q.img=img;(B[k]=B[k]||{q:[]}).q.push(q)});
+if(!Object.keys(B).length)return alert('Tidak ada soal valid. Periksa format template.');const all=Object.assign(L('bank',{}),B);S('bank',all);Object.assign(BANK,all);
+if(USEFB){try{await fbatch('bank',Object.entries(B).map(([k,v])=>[sid(k),{q:v.q}]))}catch(e){return alert('Gagal menyimpan soal ke Firebase: '+(e.code||e.message))}}
+alert(Object.keys(B).length+' bank soal dimuat'+(bad.length?'. Baris bermasalah: '+bad.slice(0,15).join(', '):'')+'.');adm()})}
+function csvOld(){const H=L('hasil',[]);const r=[['Nama','NIS','Paket','Mapel','Benar','Total PG','Skor PG','Nilai Esai']].concat(H.map(h=>[h.nm,h.ni,h.pk,h.mp,h.b,h.n,h.skor,Object.values(h.es).join('|')]));
+const u=URL.createObjectURL(new Blob([r.map(x=>x.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n')],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download='hasil-cbt.csv';a.click()}
+Object.assign(BANK,L('bank',{}));if(USEFB){fetch(location.href,{method:'HEAD',cache:'no-store'}).then(r=>{const d=r.headers.get('Date');if(d)OFF=Date.parse(d)-Date.now()}).catch(()=>{});flush()}
+home();
+</script></body></html>
